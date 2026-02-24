@@ -173,10 +173,13 @@ def get_base_uv(part: str, face: str, slim_arms: bool) -> UVRect:
         return RIGHT_LEG_BASE[face]
     if part == "left_leg":
         return LEFT_LEG_BASE[face]
+
+    # Swap arm UV assignment to match the current model coordinate convention.
     if part == "right_arm":
-        return (RIGHT_ARM_BASE_SLIM if slim_arms else RIGHT_ARM_BASE_REGULAR)[face]
-    if part == "left_arm":
         return (LEFT_ARM_BASE_SLIM if slim_arms else LEFT_ARM_BASE_REGULAR)[face]
+    if part == "left_arm":
+        return (RIGHT_ARM_BASE_SLIM if slim_arms else RIGHT_ARM_BASE_REGULAR)[face]
+
     raise KeyError(part)
 
 def get_overlay_uv(part: str, face: str, slim_arms: bool) -> UVRect | None:
@@ -188,8 +191,11 @@ def get_overlay_uv(part: str, face: str, slim_arms: bool) -> UVRect | None:
         return RIGHT_LEG_OVERLAY[face]
     if part == "left_leg":
         return LEFT_LEG_OVERLAY[face]
+
+    # Swap arm overlay UV assignment as well.
     if part == "right_arm":
-        return (RIGHT_ARM_OVERLAY_SLIM if slim_arms else RIGHT_ARM_OVERLAY_REGULAR)[face]
-    if part == "left_arm":
         return (LEFT_ARM_OVERLAY_SLIM if slim_arms else LEFT_ARM_OVERLAY_REGULAR)[face]
+    if part == "left_arm":
+        return (RIGHT_ARM_OVERLAY_SLIM if slim_arms else RIGHT_ARM_OVERLAY_REGULAR)[face]
+
     return None

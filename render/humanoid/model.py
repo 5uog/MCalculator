@@ -164,8 +164,10 @@ def face_vertices(box: AABB, face: str) -> Tuple[Vec3, Vec3, Vec3, Vec3]:
         return (Vec3(x0, y1, z1), Vec3(x0, y1, z0), Vec3(x0, y0, z0), Vec3(x0, y0, z1))
     if face == "top":
         return (Vec3(x0, y1, z0), Vec3(x1, y1, z0), Vec3(x1, y1, z1), Vec3(x0, y1, z1))
+
+    # Fix: bottom UV orientation (avoid upside-down mapping).
     if face == "bottom":
-        return (Vec3(x0, y0, z1), Vec3(x1, y0, z1), Vec3(x1, y0, z0), Vec3(x0, y0, z0))
+        return (Vec3(x0, y0, z0), Vec3(x1, y0, z0), Vec3(x1, y0, z1), Vec3(x0, y0, z1))
 
     raise KeyError(face)
 

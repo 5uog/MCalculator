@@ -65,8 +65,16 @@ class Viewport3D(QWidget):
     def set_mouse_bindings(self, mb: dict[str, int]) -> None:
         self._controller.set_mouse_bindings(mb)
 
-    def set_control_tunings(self, mouse_sens: float, pan_sens: float, move_speed: float, zoom_step: float, wheel_factor: float) -> None:
-        self._controller.set_tunings(mouse_sens, pan_sens, move_speed, zoom_step, wheel_factor)
+    def set_control_tunings(
+        self,
+        mouse_sens: float,
+        pan_sens: float,
+        move_speed: float,
+        zoom_step: float,
+        wheel_factor: float,
+        invert_y: bool,
+    ) -> None:
+        self._controller.set_tunings(mouse_sens, pan_sens, move_speed, zoom_step, wheel_factor, invert_y)
 
     def get_camera_state(self) -> dict[str, object]:
         return {

@@ -29,6 +29,11 @@ class CameraController:
     zoom_step: float = 0.24
     wheel_dolly_factor: float = 0.002
 
+    # Invert Y-Axis:
+    #   False => mouse up looks up
+    #   True  => mouse up looks down
+    invert_y: bool = False
+
     _last_mouse: Optional[tuple[float, float]] = None
     _mode: Optional[str] = None  # "rotate" | "pan" | None
 
@@ -55,12 +60,21 @@ class CameraController:
         if "pan_modifier" in mb:
             self.pan_modifier = int(mb["pan_modifier"])
 
-    def set_tunings(self, mouse_sens: float, pan_sens: float, move_speed: float, zoom_step: float, wheel_factor: float) -> None:
+    def set_tunings(
+        self,
+        mouse_sens: float,
+        pan_sens: float,
+        move_speed: float,
+        zoom_step: float,
+        wheel_factor: float,
+        invert_y: bool,
+    ) -> None:
         self.mouse_sens = float(mouse_sens)
         self.pan_sens = float(pan_sens)
         self.move_speed = float(move_speed)
         self.zoom_step = float(zoom_step)
         self.wheel_dolly_factor = float(wheel_factor)
+        self.invert_y = bool(invert_y)
 
     def mode(self) -> Optional[str]:
         return self._mode
@@ -97,8 +111,17 @@ class CameraController:
         self._last_mouse = (x, y)
 
         if self._mode == "rotate":
-            self.cam.yaw += dx * float(self.mouse_sens)
-            self.cam.pitch += dy * float(self.mouse_sens)
+            s = float(self.mouse_sens)
+
+            # Fix: horizontal (yaw) sign.
+            # Mouse right should turn view right => use "-dx" in this camera convention.
+            self.cam.yaw -= dx * s
+
+            # Vertical (pitch): keep as-is (you said this is now correct).
+            # dy < 0 means mouse moved up.
+            # invert_y=False => mouse up looks up => pitch += (-dy)*s
+            # invert_y=True  => mouse up looks down => pitch += (+dy)*s
+            self.cam.pitch += (dy if self.invert_y else -dy) * s
             self.cam.pitch = clampf(self.cam.pitch, math.radians(-89.0), math.radians(89.0))
             return True
 
@@ -114,10 +137,10 @@ class CameraController:
 
     def on_key_combo(self, combo: int) -> bool:
         if combo == int(self.keybinds.get("forward", 0)):
-            self.cam.move_local(0.0, 0.0, -self.move_speed)
+            self.cam.move_local(0.0, 0.0, +self.move_speed)
             return True
         if combo == int(self.keybinds.get("back", 0)):
-            self.cam.move_local(0.0, 0.0, self.move_speed)
+            self.cam.move_local(0.0, 0.0, -self.move_speed)
             return True
         if combo == int(self.keybinds.get("left", 0)):
             self.cam.move_local(-self.move_speed, 0.0, 0.0)
@@ -132,10 +155,10 @@ class CameraController:
             self.cam.move_local(0.0, self.move_speed, 0.0)
             return True
         if combo == int(self.keybinds.get("zoom_in", 0)):
-            self.cam.move_local(0.0, 0.0, -self.zoom_step)
+            self.cam.move_local(0.0, 0.0, +self.zoom_step)
             return True
         if combo == int(self.keybinds.get("zoom_out", 0)):
-            self.cam.move_local(0.0, 0.0, self.zoom_step)
+            self.cam.move_local(0.0, 0.0, -self.zoom_step)
             return True
         return False
 

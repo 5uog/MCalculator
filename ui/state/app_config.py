@@ -203,8 +203,9 @@ class ControlState:
     zoom_step: float = 0.24
     wheel_dolly_factor: float = 0.002
 
+    invert_y: bool = True
+
     def __post_init__(self) -> None:
-        # Normal path: fill missing keys only, never overwrite existing values (including 0).
         self.ensure_defaults(migrate_blankish=False)
 
     @staticmethod
@@ -217,13 +218,6 @@ class ControlState:
         return all(v == 0 for v in vals)
 
     def ensure_defaults(self, migrate_blankish: bool) -> None:
-        """
-        - migrate_blankish=False:
-            Fill missing keys only (do not overwrite).
-        - migrate_blankish=True:
-            If the whole set is blank/zero, initialize to defaults once.
-            Otherwise behave like migrate_blankish=False.
-        """
         if migrate_blankish and self._blankish(self.keybinds):
             self.keybinds.clear()
             self.keybinds.update({k: int(v) for (k, v) in DEFAULT_KEYBINDS.items()})
@@ -249,6 +243,7 @@ class ControlState:
             "move_speed": float(self.move_speed),
             "zoom_step": float(self.zoom_step),
             "wheel_dolly_factor": float(self.wheel_dolly_factor),
+            "invert_y": bool(self.invert_y),
         }
 
     @staticmethod
@@ -280,8 +275,8 @@ class ControlState:
             move_speed=clampf_finite(_f(d, "move_speed", 0.45), 1e-6, 100.0, 0.45),
             zoom_step=clampf_finite(_f(d, "zoom_step", 0.24), 1e-6, 100.0, 0.24),
             wheel_dolly_factor=clampf_finite(_f(d, "wheel_dolly_factor", 0.002), 1e-6, 1.0, 0.002),
+            invert_y=bool(_f(d, "invert_y", True)),
         )
-        # One-time initialization only when the whole set is blank/zero.
         cs.ensure_defaults(migrate_blankish=bool(migrate_blankish))
         return cs
 
@@ -325,7 +320,6 @@ class SkinState:
 
 @dataclass
 class AppConfig:
-    # Version 2: default-fill fix and one-time migration from blank keybinds/mouse.
     version: int = 2
 
     scene: SceneState = field(default_factory=SceneState)

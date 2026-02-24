@@ -119,6 +119,9 @@ class ControlPanel(QWidget):
             "pan_modifier": pan_mod,
         }
 
+    def get_invert_y(self) -> bool:
+        return bool(self.chk_invert_y.isChecked())
+
     def get_block_opacity(self) -> float:
         return float(self.block_opacity.value())
 
@@ -152,6 +155,9 @@ class ControlPanel(QWidget):
 
     def set_config_path(self, p: str) -> None:
         self.ed_cfg_path.setText(str(p))
+
+    def set_invert_y(self, v: bool) -> None:
+        self.chk_invert_y.setChecked(bool(v))
 
     def set_eye_height(self, eye_a: float, eye_b: float | None = None) -> None:
         ea = float(eye_a)
@@ -194,7 +200,7 @@ class ControlPanel(QWidget):
         self.btn_apply_keybinds.setEnabled(not running)
         for w in (self.k_forward, self.k_back, self.k_left, self.k_right, self.k_down, self.k_up, self.k_zoom_in, self.k_zoom_out):
             w.setEnabled(not running)
-        for w in (self.cmb_rotate_button, self.cmb_pan_button, self.cmb_pan_modifier, self.block_opacity):
+        for w in (self.cmb_rotate_button, self.cmb_pan_button, self.cmb_pan_modifier, self.block_opacity, self.chk_invert_y):
             w.setEnabled(not running)
 
         self.btn_browse_skin_a.setEnabled(not running)
@@ -512,6 +518,9 @@ class ControlPanel(QWidget):
             if i >= 0:
                 self.cmb_pan_modifier.setCurrentIndex(i)
 
+    def _reset_invert_y(self) -> None:
+        self.chk_invert_y.setChecked(True)
+
     def _build_settings_tab(self) -> None:
         self._reset_buttons: list[QPushButton] = []
 
@@ -601,6 +610,11 @@ class ControlPanel(QWidget):
         mouse_form.addRow(QLabel("Rotate (drag) button"), row_with_reset(self.cmb_rotate_button, lambda: self._reset_mouse("rotate_button")))
         mouse_form.addRow(QLabel("Pan (drag) button"), row_with_reset(self.cmb_pan_button, lambda: self._reset_mouse("pan_button")))
         mouse_form.addRow(QLabel("Pan modifier"), row_with_reset(self.cmb_pan_modifier, lambda: self._reset_mouse("pan_modifier")))
+
+        # Invert Y option (with reset)
+        self.chk_invert_y = QCheckBox("Invert Mouse Axes (X/Y)")
+        self.chk_invert_y.setChecked(True)
+        mouse_form.addRow(QLabel("Look"), row_with_reset(self.chk_invert_y, self._reset_invert_y))
 
         blocks_box = QGroupBox("Settings: Block texture")
         blocks_form = QFormLayout(blocks_box)

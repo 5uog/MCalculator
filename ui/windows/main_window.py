@@ -104,10 +104,12 @@ class MainWindow(QMainWindow):
             move_speed=float(self.cfg.controls.move_speed),
             zoom_step=float(self.cfg.controls.zoom_step),
             wheel_factor=float(self.cfg.controls.wheel_dolly_factor),
+            invert_y=bool(self.cfg.controls.invert_y),
         )
 
         self.panel.set_keybinds(self.cfg.controls.keybinds)
         self.panel.set_mouse_bindings(self.cfg.controls.mouse)
+        self.panel.set_invert_y(bool(self.cfg.controls.invert_y))
 
         cam = self.cfg.camera
         self.viewport.set_camera_state(
@@ -141,6 +143,7 @@ class MainWindow(QMainWindow):
 
         kb = self.panel.get_keybinds()
         mb = self.panel.get_mouse_bindings()
+        inv_y = bool(self.panel.get_invert_y())
 
         cam_state = self.viewport.get_camera_state()
         cam = CameraState(
@@ -165,6 +168,7 @@ class MainWindow(QMainWindow):
                 move_speed=float(self.cfg.controls.move_speed),
                 zoom_step=float(self.cfg.controls.zoom_step),
                 wheel_dolly_factor=float(self.cfg.controls.wheel_dolly_factor),
+                invert_y=inv_y,
             ),
             render=self.cfg.render.__class__(block_opacity=float(self.panel.get_block_opacity())),
             skins=self.cfg.skins,
@@ -254,10 +258,19 @@ class MainWindow(QMainWindow):
     def _apply_settings(self) -> None:
         kb = self.panel.get_keybinds()
         mb = self.panel.get_mouse_bindings()
+        inv_y = bool(self.panel.get_invert_y())
         self._block_opacity = float(self.panel.get_block_opacity())
 
         self.viewport.set_keybinds(kb)
         self.viewport.set_mouse_bindings(mb)
+        self.viewport.set_control_tunings(
+            mouse_sens=float(self.cfg.controls.mouse_sens),
+            pan_sens=float(self.cfg.controls.pan_sens),
+            move_speed=float(self.cfg.controls.move_speed),
+            zoom_step=float(self.cfg.controls.zoom_step),
+            wheel_factor=float(self.cfg.controls.wheel_dolly_factor),
+            invert_y=inv_y,
+        )
 
         self._sync_view()
         self.viewport.update()
