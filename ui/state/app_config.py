@@ -13,8 +13,8 @@ from scene.world import World
 from scene.entities import Player, Block, STEVE_GEOMETRY, ALEX_GEOMETRY
 from sim.config import SimConfig
 from sim.jitter import JitterSpec
-from utils.config_store import load_json, save_json_atomic
-from utils.paths import config_file_path, normalize_saved_path, resolve_saved_path
+from app.config_store import load_json, save_json_atomic
+from app.paths import config_file_path, normalize_saved_path, resolve_saved_path
 
 from ui.state.default_controls import DEFAULT_KEYBINDS, DEFAULT_MOUSE
 from utils.numeric import clampf_finite, clampi
@@ -151,7 +151,6 @@ class SceneState:
             manual_blocks=blocks,
         )
 
-
 @dataclass
 class CameraState:
     pos: list[float] = field(default_factory=lambda: [8.0, 6.0, 12.0])
@@ -192,7 +191,6 @@ class CameraState:
             near=clampf_finite(_f(d, "near", 0.1), 1e-4, 100.0, 0.1),
             far=clampf_finite(_f(d, "far", 200.0), 1.0, 1e6, 200.0),
         )
-
 
 @dataclass
 class ControlState:
@@ -287,7 +285,6 @@ class ControlState:
         cs.ensure_defaults(migrate_blankish=bool(migrate_blankish))
         return cs
 
-
 @dataclass
 class RenderState:
     block_opacity: float = 1.0
@@ -298,7 +295,6 @@ class RenderState:
     @staticmethod
     def from_dict(d: dict[str, Any]) -> "RenderState":
         return RenderState(block_opacity=clampf_finite(_f(d, "block_opacity", 1.0), 0.0, 1.0, 1.0))
-
 
 @dataclass
 class SkinState:
@@ -326,7 +322,6 @@ class SkinState:
 
     def set_b(self, p: Path | None) -> None:
         self.path_b = normalize_saved_path(p)
-
 
 @dataclass
 class AppConfig:

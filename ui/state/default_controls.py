@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from PyQt6.QtCore import Qt
 
-from utils.qt import enum_int
+from ui.qt_utils import enum_int
 
 DEFAULT_KEYBINDS: dict[str, int] = {
     "forward": enum_int(Qt.Key.Key_W),

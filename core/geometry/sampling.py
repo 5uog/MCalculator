@@ -4,42 +4,78 @@ from functools import lru_cache
 from core.geometry.vec3 import Vec3
 from core.geometry.aabb import AABB
 
-@lru_cache(maxsize=128)
+def _linspace_01(n: int) -> list[float]:
+    n = int(n)
+    if n <= 1:
+        return [0.5]
+    inv = 1.0 / float(n - 1)
+    return [float(i) * inv for i in range(n)]
+
+@lru_cache(maxsize=256)
 def _surface_offsets_cached(sx_q: int, sy_q: int, sz_q: int, n: int) -> tuple[Vec3, ...]:
     """
     Cache surface offsets for a box of size (sx, sy, sz).
     The sizes are quantized integers in microunits to keep the cache stable.
+
+    Interpretation of n:
+        n is the reference resolution for the longest dimension.
+        Other dimensions get scaled sample counts to keep a roughly uniform surface density.
     """
     sx = float(sx_q) * 1e-6
     sy = float(sy_q) * 1e-6
     sz = float(sz_q) * 1e-6
 
     n = max(1, int(n))
-    xs = [sx * (i / (n - 1) if n > 1 else 0.5) for i in range(n)]
-    ys = [sy * (i / (n - 1) if n > 1 else 0.5) for i in range(n)]
-    zs = [sz * (i / (n - 1) if n > 1 else 0.5) for i in range(n)]
+    max_dim = max(abs(sx), abs(sy), abs(sz), 1e-12)
 
-    pts: list[Vec3] = []
+    def _count_for(dim: float) -> int:
+        if n <= 1:
+            return 1
+        if abs(dim) <= 1e-12:
+            return 1
+        # Scale samples so that density is roughly constant across faces.
+        scaled = 1.0 + (float(n - 1) * (abs(dim) / max_dim))
+        return max(2, int(round(scaled)))
+
+    nx = _count_for(sx)
+    ny = _count_for(sy)
+    nz = _count_for(sz)
+
+    xs = [sx * t for t in _linspace_01(nx)]
+    ys = [sy * t for t in _linspace_01(ny)]
+    zs = [sz * t for t in _linspace_01(nz)]
+
+    # Deduplicate edge/corner points using microunit quantization.
+    uniq: dict[tuple[int, int, int], Vec3] = {}
+
+    def _add(x: float, y: float, z: float) -> None:
+        k = (int(round(x * 1e6)), int(round(y * 1e6)), int(round(z * 1e6)))
+        if k not in uniq:
+            uniq[k] = Vec3(float(x), float(y), float(z))
 
     for y in ys:
         for z in zs:
-            pts.append(Vec3(0.0, y, z))
-            pts.append(Vec3(sx, y, z))
+            _add(0.0, y, z)
+            _add(sx, y, z)
 
     for x in xs:
         for z in zs:
-            pts.append(Vec3(x, 0.0, z))
-            pts.append(Vec3(x, sy, z))
+            _add(x, 0.0, z)
+            _add(x, sy, z)
 
     for x in xs:
         for y in ys:
-            pts.append(Vec3(x, y, 0.0))
-            pts.append(Vec3(x, y, sz))
+            _add(x, y, 0.0)
+            _add(x, y, sz)
 
-    return tuple(pts)
+    return tuple(uniq.values())
 
 def sample_aabb_surface(box: AABB, n: int) -> list[Vec3]:
-    """Uniform grid samples on the surface of an AABB."""
+    """
+    Surface samples on the AABB.
+
+    n is a reference resolution for the longest dimension (see cache docstring).
+    """
     n = max(1, int(n))
     mn, mx = box.mn, box.mx
     sx = float(mx.x - mn.x)

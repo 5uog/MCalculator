@@ -5,7 +5,7 @@ import math
 from PyQt6.QtGui import QKeySequence
 
 from render.camera import Camera
-from utils.qt import mouse_button_name, modifier_name
+from ui.qt_utils import mouse_button_name, modifier_name
 
 def _ks(keybinds: dict[str, int], name: str) -> str:
     code = int(keybinds.get(name, 0))

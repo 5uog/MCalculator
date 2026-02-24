@@ -1,14 +1,13 @@
-# FILE: render/scene/builder.py
+# FILE: render/viz/builder.py
 from __future__ import annotations
 
-import math
 import numpy as np
 
 from core.geometry.aabb import AABB
 from core.geometry.vec3 import Vec3
 
-from render.scene.items import RenderItem
-from render.scene.snapshot import SceneSnapshot, AttackViz
+from render.viz.items import RenderItem
+from render.viz.snapshot import SceneSnapshot, AttackViz
 
 from render.humanoid.model import (
     humanoid_parts_at,
@@ -24,7 +23,6 @@ from render.humanoid.model import (
 from render.humanoid.skin_uv import get_base_uv, get_overlay_uv
 
 from utils.numeric import clamp01, finite_or
-
 
 def _add_textured_part(
     items: list[RenderItem],
@@ -66,7 +64,6 @@ def _add_textured_part(
             )
         )
 
-
 def _add_textured_block(items: list[RenderItem], block_box: AABB, texture_key: str, opacity: float) -> None:
     box2 = inflate_aabb(block_box, eps=1e-4)
     op = clamp01(finite_or(opacity, 1.0))
@@ -90,7 +87,6 @@ def _add_textured_block(items: list[RenderItem], block_box: AABB, texture_key: s
                 normal=n,
             )
         )
-
 
 def build_scene_items(
     snapshot: SceneSnapshot,

@@ -19,7 +19,7 @@ from core.geometry.vec3 import Vec3
 from sim.jitter import JitterSpec
 from sim.config import SimConfig
 from core.metrics.types import SummaryStats, TrialResult
-from utils.qt import keyseq_to_int, enum_int
+from ui.qt_utils import keyseq_to_int, enum_int
 from ui.state.default_controls import DEFAULT_KEYBINDS, DEFAULT_MOUSE
 
 class ControlPanel(QWidget):

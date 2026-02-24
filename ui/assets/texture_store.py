@@ -8,7 +8,7 @@ from typing import Dict, Optional
 from PyQt6.QtGui import QPixmap
 
 from ui.assets.image_utils import load_png_pixmap
-from utils.paths import asset_path, normalize_saved_path, resolve_saved_path
+from app.paths import asset_path, normalize_saved_path, resolve_saved_path
 
 SKIN_A_KEY = "skin_a"
 SKIN_B_KEY = "skin_b"

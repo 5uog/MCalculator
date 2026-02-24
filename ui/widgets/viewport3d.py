@@ -9,11 +9,11 @@ from PyQt6.QtGui import QPainter
 from PyQt6.QtWidgets import QWidget
 
 from render.camera import Camera
-from render.scene.items import RenderItem
+from render.viz.items import RenderItem
 from ui.controllers.camera_controller import CameraController
 from ui.render.viewport_renderer import ViewportRenderer
 from ui.render.hud import build_hud_top_lines
-from utils.qt import enum_int
+from ui.qt_utils import enum_int
 
 class Viewport3D(QWidget):
     def __init__(self, texture_resolver, parent=None):

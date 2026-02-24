@@ -1,11 +1,11 @@
-# FILE: utils/config_locator.py
+# FILE: app/config_locator.py
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
-from utils.config_store import load_json, save_json_atomic
-from utils.paths import user_config_dir, config_file_path
+from app.config_store import load_json, save_json_atomic
+from app.paths import user_config_dir, config_file_path
 
 _LOCATOR_FILENAME = "config_location.json"
 

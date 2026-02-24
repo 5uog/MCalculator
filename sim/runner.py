@@ -5,7 +5,6 @@ import math
 from typing import Callable
 
 from core.geometry.vec3 import Vec3
-from core.geometry.aabb import AABB
 from core.reach.attack import evaluate_attack
 from core.metrics.types import TrialResult, SummaryStats
 from core.metrics.summary import summarize
@@ -14,13 +13,6 @@ from sim.jitter import JitterSpec
 from sim.config import SimConfig
 
 ProgressCb = Callable[[float, str, int, int], None]
-
-def _player_aabb_at(pos: Vec3, width: float, height: float) -> AABB:
-    hw = width / 2.0
-    return AABB(
-        Vec3(pos.x - hw, pos.y, pos.z - hw),
-        Vec3(pos.x + hw, pos.y + height, pos.z + hw),
-    )
 
 def _one_direction(world: World, attacker_name: str, defender_name: str,
                    jitter: JitterSpec, cfg: SimConfig,
@@ -52,8 +44,8 @@ def _one_direction(world: World, attacker_name: str, defender_name: str,
         a_pos = Vec3(base_a.x + ja.x, base_a.y + ja.y, base_a.z + ja.z)
         b_pos = Vec3(base_b.x + jb.x, base_b.y + jb.y, base_b.z + jb.z)
 
-        attacker_eye = Vec3(a_pos.x, a_pos.y + attacker.eye, a_pos.z)
-        target_box = _player_aabb_at(b_pos, defender.width, defender.height)
+        attacker_eye = attacker.eye_point_at(a_pos)
+        target_box = defender.aabb_at(b_pos)
 
         ev = evaluate_attack(
             attacker_eye=attacker_eye,

@@ -1,4 +1,4 @@
-# FILE: utils/config_store.py
+# FILE: app/config_store.py
 from __future__ import annotations
 
 import json

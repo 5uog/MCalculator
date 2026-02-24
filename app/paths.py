@@ -1,4 +1,4 @@
-# FILE: utils/paths.py
+# FILE: app/paths.py
 from __future__ import annotations
 
 import os
@@ -21,7 +21,8 @@ def resource_root() -> Path:
     for p in [here.parent, *here.parents]:
         if (p / "assets").is_dir():
             return p
-    # Fallback: utils/paths.py -> utils -> project root (best effort)
+
+    # Fallback: app/paths.py -> app -> project root (best effort)
     return here.parents[1]
 
 def asset_path(*parts: str) -> Path:

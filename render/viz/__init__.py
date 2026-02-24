@@ -1,2 +1,2 @@
-# FILE: render/scene/__init__.py
+# FILE: render/viz/__init__.py
 from __future__ import annotations

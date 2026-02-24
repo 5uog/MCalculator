@@ -17,18 +17,16 @@ from ui.workers.sim_worker import SimWorker
 from ui.logic.preview import compute_attack_previews
 from ui.logic.pose import BodyYawFollower, compute_head_yaw_pitch
 
-from render.scene.builder import build_scene_items
-from render.scene.snapshot import SceneSnapshot, PlayerViz, BlockViz, AttackViz
+from render.viz.builder import build_scene_items
+from render.viz.snapshot import SceneSnapshot, PlayerViz, BlockViz, AttackViz
 
 from ui.assets.texture_store import TextureStore, SKIN_A_KEY, SKIN_B_KEY, BLOCK_KEY
 
 from ui.state.app_config import AppConfig, SceneState, CameraState
-from utils.config_locator import get_active_config_path, set_active_config_path
-from utils.paths import config_file_path
-from utils.paths import resolve_saved_path
+from app.config_locator import get_active_config_path, set_active_config_path
+from app.paths import config_file_path, resolve_saved_path
 
 MAX_HEAD_BODY_YAW_DEG = 75.0  # vanilla-like: head can turn relative to body up to ~75deg
-
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -449,7 +447,6 @@ class MainWindow(QMainWindow):
         )
 
         self.viewport.set_scene(items)
-
 
 def run_app() -> None:
     app = QApplication([])

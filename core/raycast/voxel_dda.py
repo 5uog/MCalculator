@@ -7,6 +7,9 @@ def segment_hits_solid_blocks_dda(p0: Vec3, p1: Vec3, solids: set[tuple[int, int
     """
     Fast voxel traversal for unit blocks on an integer grid.
     The segment is tested against occupied grid cells using 3D DDA.
+
+    This implementation handles exact edge/corner crossings by stepping along
+    multiple axes when t_max ties occur (within a small epsilon).
     """
     x0, y0, z0 = float(p0.x), float(p0.y), float(p0.z)
     x1, y1, z1 = float(p1.x), float(p1.y), float(p1.z)
@@ -58,27 +61,45 @@ def segment_hits_solid_blocks_dda(p0: Vec3, p1: Vec3, solids: set[tuple[int, int
         t_delta_z = float("inf")
 
     t = 0.0
+    tie_eps = 1e-12
+
     while t <= 1.0:
         if (vx, vy, vz) in solids:
             return True
 
-        if t_max_x < t_max_y:
-            if t_max_x < t_max_z:
+        t_next = min(t_max_x, t_max_y, t_max_z)
+        if not math.isfinite(t_next):
+            break
+
+        stepped = False
+        if abs(t_max_x - t_next) <= tie_eps:
+            vx += step_x
+            t_max_x += t_delta_x
+            stepped = True
+        if abs(t_max_y - t_next) <= tie_eps:
+            vy += step_y
+            t_max_y += t_delta_y
+            stepped = True
+        if abs(t_max_z - t_next) <= tie_eps:
+            vz += step_z
+            t_max_z += t_delta_z
+            stepped = True
+
+        if not stepped:
+            # Fallback: avoid infinite loops on numerical issues.
+            if t_max_x <= t_max_y and t_max_x <= t_max_z:
                 vx += step_x
-                t = t_max_x
                 t_max_x += t_delta_x
-            else:
-                vz += step_z
-                t = t_max_z
-                t_max_z += t_delta_z
-        else:
-            if t_max_y < t_max_z:
+                t_next = t_max_x
+            elif t_max_y <= t_max_z:
                 vy += step_y
-                t = t_max_y
                 t_max_y += t_delta_y
+                t_next = t_max_y
             else:
                 vz += step_z
-                t = t_max_z
                 t_max_z += t_delta_z
+                t_next = t_max_z
+
+        t = float(t_next)
 
     return False

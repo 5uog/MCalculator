@@ -1,5 +1,6 @@
-# FILE: utils/qt.py
+# FILE: ui/qt_utils.py
 from __future__ import annotations
+
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QKeySequence
 

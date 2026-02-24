@@ -1,4 +1,4 @@
-# FILE: render/scene/items.py
+# FILE: render/viz/items.py
 from __future__ import annotations
 
 from dataclasses import dataclass

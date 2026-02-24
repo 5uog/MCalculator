@@ -16,10 +16,9 @@ from render.projection import (
     world_to_camera, project_cam_to_screen, project_segment_world
 )
 from core.geometry.aabb import AABB
-from render.scene.items import RenderItem
+from render.viz.items import RenderItem
 
 from utils.numeric import clamp01, finite_or
-
 
 def _aabb_edges() -> list[tuple[int, int]]:
     return [
@@ -27,7 +26,6 @@ def _aabb_edges() -> list[tuple[int, int]]:
         (4, 5), (5, 6), (6, 7), (7, 4),
         (0, 4), (1, 5), (2, 6), (3, 7),
     ]
-
 
 class ViewportRenderer:
     """

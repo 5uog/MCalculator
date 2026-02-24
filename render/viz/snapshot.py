@@ -1,4 +1,4 @@
-# FILE: render/scene/snapshot.py
+# FILE: render/viz/snapshot.py
 from __future__ import annotations
 
 from dataclasses import dataclass
